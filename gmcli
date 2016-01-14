@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+#  gmcli
+#
+#  Version 0.1
+#
+#  Copyright 2016 Claudio Giordano <claudio.giordano@autistici.org>
+#
+#  License GPLv3 https://www.gnu.org/licenses/gpl.html
+
+import sys
+import os
+#import tempfile
+#import ConfigParser
+#import argparse
+#from distutils.spawn import find_executable
+from subprocess import Popen, PIPE, call
+#import ConfigParser
+import re
+
+class GearmanManagerCli(object):
+    def getServersList(self, filePath):
+        text_file = open(filePath, "r")
+        self.serversList = text_file.readlines()
+        print self.serversList
+        
+    def getServerStatus(self, hostName):
+        pass
+    
+    def showStatus(self):
+        for server in self.serversList:
+            print "DEBUG %s" % server
+            p = Popen(['gearadmin', '-h ' + server + ' --status'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+            rc = p.returncode
+            print output, err
+            #subprocess.call("gearadmin -h 192.168.1.145 --status")
+    
+    def __init__(self, serversList):
+        call("clear")
+        self.getServersList(serversList)
+
+if __name__ == "__main__":
+    gmcli = GearmanManagerCli("servers.conf")
+    gmcli.showStatus()
