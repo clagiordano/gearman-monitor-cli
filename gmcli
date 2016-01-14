@@ -26,18 +26,18 @@ class GearmanManagerCli(object):
         print self.serversList
         
     def getServerStatus(self, hostName):
-        pass
+        command = 'gearadmin -h ' + hostName.rstrip() + ' --status'
+        #print "COMMAND: %s" % command
+        
+        p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+        rc = p.returncode
+        return output
     
     def showStatus(self):
         for server in self.serversList:
-            command = 'gearadmin -h ' + server.rstrip() + ' --status'
-            print "COMMAND: %s" % command
+            self.getServerStatus(server)
             
-            p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-            output, err = p.communicate(b"input data that is passed to subprocess' stdin")
-            rc = p.returncode
-            print output, err
-            #subprocess.call("gearadmin -h 192.168.1.145 --status")
     
     def __init__(self, serversList):
         call("clear")
