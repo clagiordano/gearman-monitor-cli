@@ -30,8 +30,10 @@ class GearmanManagerCli(object):
     
     def showStatus(self):
         for server in self.serversList:
-            print "DEBUG %s" % server
-            p = Popen(['gearadmin', '-h ' + server + ' --status'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            command = 'gearadmin -h ' + server.rstrip() + ' --status'
+            print "COMMAND: %s" % command
+            
+            p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
             output, err = p.communicate(b"input data that is passed to subprocess' stdin")
             rc = p.returncode
             print output, err
