@@ -11,6 +11,7 @@
 
 import sys
 import os
+import time
 #import tempfile
 #import ConfigParser
 #import argparse
@@ -18,6 +19,7 @@ import os
 from subprocess import Popen, PIPE, call
 #import ConfigParser
 import re
+import gearman
 
 class GearmanManagerCli(object):
     def getServersList(self, filePath):
@@ -25,7 +27,7 @@ class GearmanManagerCli(object):
         self.serversList = text_file.readlines()
         print self.serversList
         
-    def getServerStatus(self, hostName):
+    def getServerStatusOLD(self, hostName):
         command = 'gearadmin -h ' + hostName.rstrip() + ' --status'
         #print "COMMAND: %s" % command
         
@@ -34,15 +36,41 @@ class GearmanManagerCli(object):
         rc = p.returncode
         return output
     
+    def getServerStatus(self, serverAddress):
+        gm_admin_client = gearman.GearmanAdminClient([serverAddress])
+        # Inspect server state
+        
+        # Retrieves a list of all registered tasks and reports how many items/workers are in the queue
+        status_response = gm_admin_client.get_status()
+        #print status_response
+        
+        # Retrieves the version number of the Gearman server
+        #version_response = gm_admin_client.get_version()
+        #print version_response
+        
+        # Retrieves a list of workers and reports what tasks they’re operating on
+        #workers_response = gm_admin_client.get_workers()
+        #print workers_response
+        return status_response
+    
+    def printStatus(self, statusData):
+        # {'workers': 1, 'running': 0, 'task': 'makeclipfast', 'queued': 0} 
+        print " %20s %8s %8s %8s" % ('task', 'workers', 'running', 'queued')
+        for job in statusData:
+            print "%20s: %8d %8d %8d" % (job['task'], job['workers'], job['running'], job['queued'])
+    
     def showStatus(self):
         for server in self.serversList:
-            self.getServerStatus(server)
+            print "Server status for %s" % server
+            self.printStatus(self.getServerStatus(server.rstrip()))
+            print
             
-    
     def __init__(self, serversList):
-        call("clear")
         self.getServersList(serversList)
 
 if __name__ == "__main__":
     gmcli = GearmanManagerCli("servers.conf")
+    #while True:
+    call("clear")
     gmcli.showStatus()
+     #   time.sleep(5)
