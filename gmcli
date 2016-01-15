@@ -92,15 +92,20 @@ class GearmanManagerCli(object):
         parser.add_argument("-s", "--status", action='store_true', help="Show servers status")
         parser.add_argument("-w", "--workers", action='store_true', help="Show workers status")
         parser.add_argument("-r", "--refresh", action='store', help="Auto refresh delay")
+        parser.add_argument("-l", "--serverslist", action='store', help="Servers list file path")
         
         self.argsParsed = parser.parse_args()
             
-    def __init__(self, serversListPath):
+    def __init__(self, serversListPath = "servers.conf"):
         self.setArgParser()
+        
+        if (self.argsParsed.serverslist):
+            serversListPath = self.argsParsed.serverslist
+        
         self.getServersList(serversListPath)
 
 if __name__ == "__main__":
-    gmcli = GearmanManagerCli("servers.conf")
+    gmcli = GearmanManagerCli()
     if (gmcli.argsParsed.refresh):
         while (True):
             call("clear")
