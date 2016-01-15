@@ -67,18 +67,17 @@ class GearmanManagerCli(object):
             server = server.rstrip()
             print "Server status for %s" % server
             
-            statusData = self.getStatus(server, 'piuppo')
+            statusData = self.getStatus(server, 'workers')
             
             if len(statusData) == 0:
-                print "\tNo jobs registered on this server\n"
+                print "\tNo workers registered on this server\n"
                 continue
-            
-            print " %20s %8s %8s %8s" \
-                % ('task', 'workers', 'running', 'queued')
                 
-            for job in statusData:
-                print "%20s: %8d %8d %8d" \
-                    % (job['task'], job['workers'], job['running'], job['queued'])
+            print " %5s %-10s %-15s %-20s" % ('#', 'ID', 'IP', 'task')
+            for worker in statusData:
+                #for task in worker['tasks']:
+                print " %5s %-10s %-15s %-20s" \
+                    % (worker['file_descriptor'], worker['client_id'], worker['ip'], worker['tasks'])
             print
     
     def showStatus(self):
@@ -92,7 +91,7 @@ class GearmanManagerCli(object):
         parser = argparse.ArgumentParser()
         parser.add_argument("-s", "--status", action='store_true', help="Show servers status")
         parser.add_argument("-w", "--workers", action='store_true', help="Show workers status")
-        parser.add_argument("-r", "--refresh", action='store_true', help="Auto refresh delay")
+        parser.add_argument("-r", "--refresh", action='store', help="Auto refresh delay")
         
         self.argsParsed = parser.parse_args()
             
@@ -102,7 +101,11 @@ class GearmanManagerCli(object):
 
 if __name__ == "__main__":
     gmcli = GearmanManagerCli("servers.conf")
-    #while True:
-    call("clear")
-    gmcli.showStatus()
-     #   time.sleep(15)
+    if (gmcli.argsParsed.refresh):
+        while (True):
+            call("clear")
+            gmcli.showStatus()
+            time.sleep(int(gmcli.argsParsed.refresh))
+    else:
+        call("clear")
+        gmcli.showStatus()
