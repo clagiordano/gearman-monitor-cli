@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  gmcli
-#
-#  Version 0.1
+#  GearmanManagerCli
 #
 #  Copyright 2016 Claudio Giordano <claudio.giordano@autistici.org>
 #
@@ -65,7 +63,7 @@ class GearmanManagerCli(object):
 
 if __name__ == "__main__":
     gmcli = GearmanManagerCli("servers.conf")
-    #while True:
-    call("clear")
-    gmcli.showStatus()
-     #   time.sleep(5)
+    while True:
+        call("clear")
+        gmcli.showStatus()
+        time.sleep(5)
