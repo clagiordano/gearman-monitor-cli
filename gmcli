@@ -26,15 +26,6 @@ class GearmanManagerCli(object):
         text_file = open(filePath, "r")
         self.serversList = text_file.readlines()
         print self.serversList
-        
-    def getServerStatusOLD(self, hostName):
-        command = 'gearadmin -h ' + hostName.rstrip() + ' --status'
-        #print "COMMAND: %s" % command
-        
-        p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        output, err = p.communicate(b"input data that is passed to subprocess' stdin")
-        rc = p.returncode
-        return output
     
     def getServerStatus(self, serverAddress):
         gm_admin_client = gearman.GearmanAdminClient([serverAddress])
