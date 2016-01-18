@@ -86,7 +86,7 @@ class GearmanManagerCli(object):
     def showJobsStatus(self):
         for server in self.serversList:
             server = server.rstrip()
-            print "Server status for %-30s [%s]" % (server, self.getStatus(server, 'version'))
+            print "Server status for %-30s [%s]" % (server, self.getStatus(server, 'version'))            
             print "\tNot implemented yet!\n"
             
             """
@@ -133,6 +133,7 @@ if __name__ == "__main__":
         while (True):
             call("clear")
             gmcli.showStatus()
+            print "Enabled auto refresh every %d second/s." % int(gmcli.argsParsed.refresh)
             time.sleep(int(gmcli.argsParsed.refresh))
     else:
         call("clear")
