@@ -76,11 +76,11 @@ class GearmanManagerCli(object):
                 print "\tNo workers registered on this server\n"
                 continue
                 
-            print " %5s %-10s %-15s %-20s" % ('#', 'ID', 'IP', 'task')
+            print " %5s %-10s %-15s %-20s" % ('#', 'ID', 'IP', 'Tasks')
             for worker in statusData:
                 #for task in worker['tasks']:
                 print " %5s %-10s %-15s %-20s" \
-                    % (worker['file_descriptor'], worker['client_id'], worker['ip'], worker['tasks'])
+                    % (worker['file_descriptor'], worker['client_id'], worker['ip'], ', '.join(worker['tasks']))
             print
     
     def showJobsStatus(self):
