@@ -52,7 +52,12 @@ class GearmanManagerCli(object):
     def showServersStatus(self):
         for server in self.serversList:
             server = server.rstrip()
-            print "Server status for %-30s [%s]" % (server, self.getStatus(server, 'version'))
+            
+            serverVersion = self.getStatus(server, 'version')
+            if (serverVersion == False):
+                serverVersion = "UNREACHABLE"
+                
+            print "Server status for %-30s [%s]" % (server, serverVersion)
             
             statusData = self.getStatus(server)
             
