@@ -84,7 +84,7 @@ class GearmanManagerCli(object):
 
             statusData = self.getStatus(server, 'workers')
 
-            if len(statusData) == 0:
+            if statusData == False or len(statusData) == 0:
                 print "\tNo workers registered on this server\n"
                 continue
 
