@@ -24,21 +24,22 @@ class GearmanManagerCli(object):
         text_file = open(filePath, "r")
         self.serversList = text_file.readlines()
 
-    def getStatus(self, serverAddress, statusMode = 'status'):
+    def getStatus(self, serverAddress, statusMode='status'):
         try:
             gm_admin_client = gearman.GearmanAdminClient([serverAddress])
 
             # Inspect server state
-            if (statusMode == 'status'):
-                # Retrieves a list of all registered tasks and reports how many items/workers are in the queue
+            if statusMode == 'status':
+                # Retrieves a list of all registered tasks and reports how many
+                # items/workers are in the queue
                 responseData = gm_admin_client.get_status()
-            elif (statusMode == 'workers'):
+            elif statusMode == 'workers':
                 # Retrieves a list of workers and reports what tasks they’re operating on
                 responseData = gm_admin_client.get_workers()
-            elif (statusMode == 'jobs'):
+            elif statusMode == 'jobs':
                 # Retrieves a list of workers and reports what tasks they’re operating on
                 responseData = gm_admin_client.get_version()
-            elif (statusMode == 'version'):
+            elif statusMode == 'version':
                 # Retrieves the version number of the Gearman server
                 responseData = gm_admin_client.get_version()
             else:
@@ -54,7 +55,7 @@ class GearmanManagerCli(object):
             server = server.rstrip()
 
             serverVersion = self.getStatus(server, 'version')
-            if (serverVersion == False):
+            if serverVersion == False:
                 serverVersion = "UNREACHABLE"
 
             print "Server status for %-30s [%s]" % (server, serverVersion)
@@ -80,7 +81,8 @@ class GearmanManagerCli(object):
     def showWorkersStatus(self):
         for server in self.serversList:
             server = server.rstrip()
-            print "Server status for %-30s [%s]" % (server, self.getStatus(server, 'version'))
+            print "Server status for %-30s [%s]" \
+                % (server, self.getStatus(server, 'version'))
 
             statusData = self.getStatus(server, 'workers')
 
@@ -92,13 +94,17 @@ class GearmanManagerCli(object):
             for worker in statusData:
                 #for task in worker['tasks']:
                 print " %5s %-10s %-15s %-20s" \
-                    % (worker['file_descriptor'], worker['client_id'], worker['ip'], ', '.join(worker['tasks']))
+                    % (worker['file_descriptor'], \
+                    worker['client_id'], \
+                    worker['ip'], \
+                    ', '.join(worker['tasks']))
             print
 
     def showJobsStatus(self):
         for server in self.serversList:
             server = server.rstrip()
-            print "Server status for %-30s [%s]" % (server, self.getStatus(server, 'version'))
+            print "Server status for %-30s [%s]" \
+                % (server, self.getStatus(server, 'version'))
             print "\tNot implemented yet!\n"
 
             """
@@ -111,12 +117,12 @@ class GearmanManagerCli(object):
             """
 
     def showStatus(self):
-        if ((self.argsParsed.status == True)
-            or (self.argsParsed.workers == False \
-                and self.argsParsed.status == False \
-                and self.argsParsed.jobs == False)):
+        if self.args_parsed.status == True \
+            or (self.args_parsed.workers == False \
+            and self.args_parsed.status == False \
+            and self.args_parsed.jobs == False):
             self.showServersStatus()
-        elif (self.argsParsed.jobs == True):
+        elif self.args_parsed.jobs == True:
             self.showJobsStatus()
         else:
             self.showWorkersStatus()
@@ -128,25 +134,26 @@ class GearmanManagerCli(object):
         parser.add_argument("-j", "--jobs", action='store_true', help="Show jobs list")
         parser.add_argument("-r", "--refresh", action='store', help="Auto refresh delay")
         parser.add_argument("-l", "--serverslist", action='store', help="Servers list file path")
+        parser.add_argument("-qc", "--queue-check", action='store', help="Jobs to check")
 
-        self.argsParsed = parser.parse_args()
+        self.args_parsed = parser.parse_args()
 
-    def __init__(self, serversListPath = "servers.conf"):
+    def __init__(self, serversListPath='servers.conf'):
         self.setArgParser()
 
-        if (self.argsParsed.serverslist):
-            serversListPath = self.argsParsed.serverslist
+        if self.args_parsed.serverslist:
+            serversListPath = self.args_parsed.serverslist
 
         self.getServersList(serversListPath)
 
 if __name__ == "__main__":
     gmcli = GearmanManagerCli()
-    if (gmcli.argsParsed.refresh):
-        while (True):
+    if gmcli.args_parsed.refresh:
+        while True:
             call("clear")
             gmcli.showStatus()
-            print "Enabled auto refresh every %d second/s." % int(gmcli.argsParsed.refresh)
-            time.sleep(int(gmcli.argsParsed.refresh))
+            print "Enabled auto refresh every %d second/s." % int(gmcli.args_parsed.refresh)
+            time.sleep(int(gmcli.args_parsed.refresh))
     else:
         call("clear")
         gmcli.showStatus()
