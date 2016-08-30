@@ -1,35 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  GearmanManagerCli
+#  GearmanMonitorCli
 #
 #  Copyright 2016 Claudio Giordano <claudio.giordano@autistici.org>
 #
 #  License GPLv3 https://www.gnu.org/licenses/gpl.html
 
-import sys
-import os
+# import sys
+# import os
 import time
 #import tempfile
 #import ConfigParser
 import argparse
 #from distutils.spawn import find_executable
-from subprocess import Popen, PIPE, call
+from subprocess import call
 #import ConfigParser
-import re
+# import re
 import gearman
 
 class GearmanManagerCli(object):
     def getServersList(self, filePath):
         text_file = open(filePath, "r")
         self.serversList = text_file.readlines()
-    
+
     def getStatus(self, serverAddress, statusMode = 'status'):
         try:
             gm_admin_client = gearman.GearmanAdminClient([serverAddress])
-            
+
             # Inspect server state
-            if (statusMode == 'status'): 
+            if (statusMode == 'status'):
                 # Retrieves a list of all registered tasks and reports how many items/workers are in the queue
                 responseData = gm_admin_client.get_status()
             elif (statusMode == 'workers'):
@@ -46,72 +46,72 @@ class GearmanManagerCli(object):
                 exit(1)
         except Exception:
             responseData = False
-        
+
         return responseData
-    
+
     def showServersStatus(self):
         for server in self.serversList:
             server = server.rstrip()
-            
+
             serverVersion = self.getStatus(server, 'version')
             if (serverVersion == False):
                 serverVersion = "UNREACHABLE"
-                
+
             print "Server status for %-30s [%s]" % (server, serverVersion)
-            
+
             statusData = self.getStatus(server)
-            
+
             if statusData == False:
                 print "\tNo response from server\n"
                 continue
-            
+
             if len(statusData) == 0:
                 print "\tNo jobs registered on this server\n"
                 continue
-            
-            print " %20s %8s %8s %8s" \
+
+            print " %25s %8s %8s %8s" \
                 % ('task', 'workers', 'running', 'queued')
-                
+
             for job in statusData:
-                print "%20s: %8d %8d %8d" \
+                print "%25s: %8d %8d %8d" \
                     % (job['task'], job['workers'], job['running'], job['queued'])
             print
-            
+
     def showWorkersStatus(self):
         for server in self.serversList:
             server = server.rstrip()
             print "Server status for %-30s [%s]" % (server, self.getStatus(server, 'version'))
-            
+
             statusData = self.getStatus(server, 'workers')
-            
+
             if len(statusData) == 0:
                 print "\tNo workers registered on this server\n"
                 continue
-                
+
             print " %5s %-10s %-15s %-20s" % ('#', 'ID', 'IP', 'Tasks')
             for worker in statusData:
                 #for task in worker['tasks']:
                 print " %5s %-10s %-15s %-20s" \
                     % (worker['file_descriptor'], worker['client_id'], worker['ip'], ', '.join(worker['tasks']))
             print
-    
+
     def showJobsStatus(self):
         for server in self.serversList:
             server = server.rstrip()
-            print "Server status for %-30s [%s]" % (server, self.getStatus(server, 'version'))            
+            print "Server status for %-30s [%s]" % (server, self.getStatus(server, 'version'))
             print "\tNot implemented yet!\n"
-            
+
             """
             statusData = self.getStatus(server, 'jobs')
             print statusData
-            
+
             if len(statusData) == 0:
                 print "\tNo jobs registered on this server\n"
                 continue
             """
-    
+
     def showStatus(self):
-        if ((self.argsParsed.status == True) 
+        if ((self.argsParsed.status == True)
             or (self.argsParsed.workers == False \
                 and self.argsParsed.status == False \
                 and self.argsParsed.jobs == False)):
@@ -120,7 +120,7 @@ class GearmanManagerCli(object):
             self.showJobsStatus()
         else:
             self.showWorkersStatus()
-    
+
     def setArgParser(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("-s", "--status", action='store_true', help="Show servers status")
@@ -128,15 +128,15 @@ class GearmanManagerCli(object):
         parser.add_argument("-j", "--jobs", action='store_true', help="Show jobs list")
         parser.add_argument("-r", "--refresh", action='store', help="Auto refresh delay")
         parser.add_argument("-l", "--serverslist", action='store', help="Servers list file path")
-        
+
         self.argsParsed = parser.parse_args()
-            
+
     def __init__(self, serversListPath = "servers.conf"):
         self.setArgParser()
-        
+
         if (self.argsParsed.serverslist):
             serversListPath = self.argsParsed.serverslist
-        
+
         self.getServersList(serversListPath)
 
 if __name__ == "__main__":
