@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  GearmanMonitorCli
+#  GearmanManagerCli
 #
 #  Copyright 2016 Claudio Giordano <claudio.giordano@autistici.org>
 #
@@ -22,7 +22,7 @@ import gearman
 class GearmanManagerCli(object):
     def getServersList(self, filePath):
         text_file = open(filePath, "r")
-        self.serversList = text_file.readlines()
+        self.servers_list = text_file.readlines()
 
     def getStatus(self, serverAddress, statusMode='status'):
         try:
@@ -51,7 +51,7 @@ class GearmanManagerCli(object):
         return responseData
 
     def showServersStatus(self):
-        for server in self.serversList:
+        for server in self.servers_list:
             server = server.rstrip()
 
             serverVersion = self.getStatus(server, 'version')
@@ -79,7 +79,7 @@ class GearmanManagerCli(object):
             print
 
     def showWorkersStatus(self):
-        for server in self.serversList:
+        for server in self.servers_list:
             server = server.rstrip()
             print "Server status for %-30s [%s]" \
                 % (server, self.getStatus(server, 'version'))
@@ -101,7 +101,7 @@ class GearmanManagerCli(object):
             print
 
     def showJobsStatus(self):
-        for server in self.serversList:
+        for server in self.servers_list:
             server = server.rstrip()
             print "Server status for %-30s [%s]" \
                 % (server, self.getStatus(server, 'version'))
